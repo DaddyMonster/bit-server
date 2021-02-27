@@ -5,6 +5,34 @@
   "author": "Daniel <triotk@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "apollo-server-express": "^2.21.0"
+    "@typegoose/typegoose": "^7.4.8",
+    "apollo-server-express": "^2.21.0",
+    "type-graphql": "^1.1.1",
+    "typeorm": "^0.2.31"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.2"
+  },
+  "bit": {
+    "env": {
+      "compiler": {
+        "bit.envs/compilers/typescript@3.1.53": {
+          "rawConfig": {
+            "tsconfig": {
+              "compilerOptions": {
+                "target": "ES5",
+                "module": "CommonJS",
+                "skipLibCheck": true,
+                "typeRoots": [
+                  "./src/typed"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "componentsDefaultDirectory": "components/{name}",
+    "packageManager": "yarn"
   }
 }
