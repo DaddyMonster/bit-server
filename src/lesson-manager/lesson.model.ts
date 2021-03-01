@@ -1,14 +1,15 @@
-import { prop } from "@typegoose/typegoose";
-import { Base } from "@typegoose/typegoose/lib/defaultClasses";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 import { Field, ID, Int, ObjectType } from "type-graphql";
 import { LessonTypes, Phases } from "../enums";
+import {
+  IResource,
+  ResourceBaseModel,
+} from "../resource-manager/resource.model";
+import { MgBase } from "../typed/mg.model.base";
 import { CreatorInfo } from "./creator-info.model";
 
 @ObjectType()
-export class Lesson implements Base<string> {
-  @Field(() => ID)
-  _id: string;
-
+export class Lesson extends MgBase {
   @Field(() => LessonTypes)
   @prop()
   lessonType: LessonTypes;
@@ -28,4 +29,10 @@ export class Lesson implements Base<string> {
   @Field(() => Int)
   @prop()
   level: number;
+
+  @Field(() => ID)
+  @prop({ ref: () => ResourceBaseModel })
+  resourceRef: Ref<IResource>;
 }
+
+export const LessonModel = getModelForClass(Lesson);

@@ -1,10 +1,12 @@
-import { Base, TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
-import { InterfaceType } from "type-graphql";
+import { getModelForClass } from "@typegoose/typegoose";
+import { InterfaceType, ObjectType } from "type-graphql";
+import { MgBase } from "../typed/mg.model.base";
 InterfaceType({
   resolveType: (val: any) => val.constructor.name,
+  implements: MgBase,
 });
-export abstract class IResource implements Base<string>, TimeStamps {
-  _id: string;
-  updatedAt: Date;
-  createdAt: Date;
-}
+export abstract class IResource extends MgBase {}
+
+@ObjectType()
+export class ResourceBase extends IResource {}
+export const ResourceBaseModel = getModelForClass(ResourceBase);
