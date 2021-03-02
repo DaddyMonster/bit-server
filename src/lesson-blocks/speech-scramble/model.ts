@@ -1,34 +1,42 @@
 import { prop } from "@typegoose/typegoose";
 import { Field, Int, ObjectType } from "type-graphql";
 import { AutoGenPreset, Phases } from "../../enums";
+import { TokkenedSubTrack } from "../../tracks/track.model";
 import { MgBase } from "../../typed/mg.model.base";
-import { getConfigByPreset } from "../block-config-base";
+import {
+  BlockGenContext,
+  getConfig,
+  getConfigFieldModifier,
+} from "../block-config-base";
 import { ILessonBlock } from "../ILessonBlock";
-import { speechScrambleConfigs } from "./config";
-
-@ObjectType()
-export class SpeechScrambleBlockConfigCommon {}
+import { SpeechScrambleConfig, speechScrambleConfigs } from "./config";
+import { SpeechScrambleGenerator } from "./generator";
+import { speechScrambleModifiers } from "./modifiers";
 
 @ObjectType({ implements: [MgBase, ILessonBlock] })
-export class SpeechScrambleBlock
-  extends ILessonBlock
-  implements SpeechScrambleBlockConfigCommon {
+export class SpeechScrambleBlock extends ILessonBlock {
   static getConfig(preset: AutoGenPreset, level: number, phases: Phases[]) {
-    getConfigByPreset({
+    return getConfig({
       configMap: speechScrambleConfigs,
       preset,
       phases,
       level,
     });
   }
-  static create() {}
-
-  sensitivity: number;
-  allowMouse: boolean;
-  tokkenGroupLevel: number;
-  hiddenTokkenLevel: number;
+  static getConfigFieldModifier() {
+    return getConfigFieldModifier(speechScrambleModifiers);
+  }
+  static generator = SpeechScrambleGenerator.generate;
 
   @Field(() => Int)
   @prop()
   trackIdx: number;
+
+  @Field()
+  @prop()
+  blockPhaseGroupId!: string;
+
+  @Field(() => SpeechScrambleConfig)
+  @prop({ type: () => SpeechScrambleConfig })
+  config: SpeechScrambleConfig;
 }

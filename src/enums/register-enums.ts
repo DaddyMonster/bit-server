@@ -9,6 +9,7 @@ import {
 } from "./lesson-enums";
 import { SparkUserFrom } from "./spark-user-enums";
 import { VideoTypes } from "./sori-lesson-enum";
+import { ExtractLevel, TokkenGroupLevel } from "./block-enums/config.enum";
 
 // YOU HAVE TO RUN THIS FUNCTION IN SERVER STARTER FUNCTION TO WORK PROPERLY
 export const registerEnums = () => {
@@ -43,5 +44,13 @@ export const registerEnums = () => {
   registerEnumType(VideoTypes, {
     name: "VideoTypes",
     description: "비디오 종류 (Youtube | Uploaded)",
+  });
+  registerEnumType(ExtractLevel, {
+    name: "ExtractLevel",
+    description: "레슨 블럭 추출 우선도",
+  });
+  registerEnumType(TokkenGroupLevel, {
+    name: "TokkenGroupLevel",
+    description: "토큰 분할시 토큰 그룹 단위",
   });
 };

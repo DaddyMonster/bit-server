@@ -1,11 +1,16 @@
 import { prop } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
 import { BlockType, LessonTypes } from "../enums";
+import { BlockConfigBase } from "../lesson-blocks/block-config-base";
 import { SpeechScrambleConfig } from "../lesson-blocks/speech-scramble/config";
 
 type AvailBlockLists = {
   [key in LessonTypes]: BlockType[];
 };
+
+export interface BlockTrackRef {
+  trackId: string;
+}
 
 export const availBlockLists: AvailBlockLists = {
   sori: [
@@ -24,7 +29,7 @@ export const availBlockLists: AvailBlockLists = {
 };
 
 type LessonBlockConfigType = {
-  [key in BlockType]?: any;
+  [key in BlockType]: BlockConfigBase | null;
 };
 
 @ObjectType()
