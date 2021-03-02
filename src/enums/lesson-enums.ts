@@ -1,3 +1,12 @@
+export enum ResourceTypes {
+  Sv = "sub-video",
+  Txt = "text",
+  doc = "img-doc",
+  Vl = "voc-list",
+  Lec = "lecture",
+  Aud = "audio",
+}
+
 export enum LessonTypes {
   Sori = "sori",
   Voca = "voca",
@@ -36,16 +45,43 @@ export enum BlockType {
   ww = "sori_watch_whole",
   rp = "sori_role_play",
   // SENTENCE RELATED
-  st_sc = "speech-scramble",
+  st_sc = "speech_scramble",
   st_dic = "dictation_sentence",
   st_rd = "read_alone",
   st_ph = "phonics_reading",
   //VOCAB RELATED
-  voc = "vocab-simple", // 단순 뜻 + 사진
-  voc_lit = "vocab-listen", // 듣기 + 뜻 + 말하기
-  voc_pat = "vocab-pattern", // 패턴예시 + 적용
+  voc = "vocab_simple", // 단순 뜻 + 사진
+  voc_lit = "vocab_listen", // 듣기 + 뜻 + 말하기
+  voc_pat = "vocab_pattern", // 패턴예시 + 적용
   voc_dic = "dictation_vocab",
   voc_pho = "phonics_vocab",
   // GRAMMAR RELATED
   // ADD LATER
+}
+
+export enum StepStateStatus {
+  Ns = "not-started",
+  Nv = "not-valid",
+  V = "valid",
+}
+
+export enum AutoGenPreset {
+  // Sori Specific Preset
+  S_Full = "sori-full",
+  S_Light = "sori-light",
+  S_Rp = "sori-role-aid",
+  S_SD = "sori-standard",
+  Cus = "custom",
+}
+
+export enum VocaCategory {
+  Cs = "Cs", // CORE SPOKEN
+  Gl1 = "Gl1", // NGSL 1
+  Gl2 = "Gl2", // NGSL 2
+  Gl3 = "Gl3", //NGSL 3
+  Ac = "Ac", //Academic
+  Toeic = "Toeic", //TOEIC
+  Bsl = "Bsl", // Business
+  Ui = "Ui", // USER WORDS
+  Nc = "Nc", //NO Category
 }

@@ -1,12 +1,14 @@
 import { registerEnumType } from "type-graphql";
 import {
-  LessonTypes,
-  Phases,
   BlockStepType,
   BlockType,
   BlockTypeTag,
+  LessonTypes,
+  Phases,
+  ResourceTypes,
 } from "./lesson-enums";
 import { SparkUserFrom } from "./spark-user-enums";
+import { VideoTypes } from "./sori-lesson-enum";
 
 // YOU HAVE TO RUN THIS FUNCTION IN SERVER STARTER FUNCTION TO WORK PROPERLY
 export const registerEnums = () => {
@@ -33,5 +35,13 @@ export const registerEnums = () => {
   registerEnumType(BlockTypeTag, {
     name: "BlockTypeTag",
     description: "블럭 타입별 용도 구분용",
+  });
+  registerEnumType(ResourceTypes, {
+    name: "ResourceTypes",
+    description: "리소스 종류",
+  });
+  registerEnumType(VideoTypes, {
+    name: "VideoTypes",
+    description: "비디오 종류 (Youtube | Uploaded)",
   });
 };

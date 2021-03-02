@@ -4,19 +4,19 @@ import {
   ILessonBlock,
   LessonBlockBaseModel,
 } from "../lesson-blocks/ILessonBlock";
-import { Lesson, LessonModel } from "../lesson-manager/lesson.model";
+import { LessonBase, LessonModel } from "../lesson-manager/lesson.base";
 import { MgBase } from "../typed/mg.model.base";
 
 @InterfaceType({
   resolveType: (val: any) => val.constructor.name,
 })
 export abstract class IProgressBlock extends MgBase {
-  @Field(() => Lesson)
-  lesson: Lesson;
+  @Field(() => LessonBase)
+  lesson: LessonBase;
 
   @Field(() => ID)
   @prop({ ref: () => LessonModel })
-  lessonRef: Ref<Lesson>;
+  lessonRef: Ref<LessonBase>;
 
   @Field(() => Int)
   @prop()
