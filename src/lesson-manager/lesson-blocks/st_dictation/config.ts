@@ -5,8 +5,10 @@ import { getHiddenTok, hasItem } from "../../../util/lesson-config-util";
 import {
   BlockConfigBase,
   ConfigByPhase,
+  ConfigConstructorArgs,
   ConfigGeneratorMap,
 } from "../block-config-base";
+import { GetConfigArgs } from "../ILessonBlock";
 
 @ObjectType()
 export class SentenceDicConfigByPhase implements ConfigByPhase {
@@ -25,6 +27,10 @@ export class SentenceDicConfigByPhase implements ConfigByPhase {
 
 @ObjectType()
 export class SentenceDicConfig extends BlockConfigBase {
+  static getConfigByPhase({ level, phases, preset }: GetConfigArgs) {
+    phases.map((x) => {});
+  }
+
   dedicatedPoint: number = 2;
   extractLevel = ExtractLevel.M;
   generate: boolean = false;
@@ -33,35 +39,23 @@ export class SentenceDicConfig extends BlockConfigBase {
   @prop()
   hiddenTokkenLevel: number;
 
-  constructor(props?: Partial<SentenceDicConfig>) {
+  constructor({
+    directConfigArgs,
+    inferedConfigArgs,
+    type,
+  }: ConfigConstructorArgs<SentenceDicConfig>) {
     super();
-    Object.assign(this, props);
+    if (type === "infer") {
+      console.log(inferedConfigArgs);
+      // INFERED FIELD LOGIC
+    } else {
+      Object.assign(this, directConfigArgs);
+    }
   }
 }
 
-const create = (ops: Partial<SentenceDicConfig>) => new SentenceDicConfig(ops);
-const dont = () => new SentenceDicConfig({ generate: false });
-const justDont = {
-  [Phases.Learn]: dont(),
-  [Phases.Review]: dont(),
-  [Phases.Test]: dont(),
-};
-export const sentenceDicConfigMap: ConfigGeneratorMap<SentenceDicConfig> = {
-  "sori-full": (lv, phases) => {
-    return {
-      learn: create({
-        hiddenTokkenLevel: getHiddenTok(lv),
-      }),
-      review: hasItem(phases, Phases.Review)
-        ? create({
-            hiddenTokkenLevel: Math.min(getHiddenTok(lv) + 0.3, 1),
-          })
-        : dont(),
-      test: hasItem(phases, Phases.Test)
-        ? create({ hiddenTokkenLevel: 1 })
-        : dont(),
-    };
-  },
+/* export const sentenceDicConfigMap: ConfigGeneratorMap<SentenceDicConfig> = {
+  "sori-full": (lv, phases) => {},
   "sori-light": () => justDont,
   "sori-role-aid": () => justDont,
   "sori-standard": (lv, phases) => {
@@ -79,3 +73,4 @@ export const sentenceDicConfigMap: ConfigGeneratorMap<SentenceDicConfig> = {
     };
   },
 };
+ */

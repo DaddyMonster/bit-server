@@ -25,6 +25,19 @@ export abstract class ConfigByPhase {
   [Phases.Review]?: BlockConfigBase;
   [Phases.Test]?: BlockConfigBase;
 }
+
+interface InferedConfigArgs {
+  level: number;
+  preset: AutoGenPreset;
+  phase: Phases;
+}
+
+export interface ConfigConstructorArgs<T extends BlockConfigBase> {
+  type: "infer" | "direct";
+  inferedConfigArgs: InferedConfigArgs;
+  directConfigArgs: Partial<T>;
+}
+
 interface ConfigFunctionByPhase<T extends BlockConfigBase> {
   [Phases.Learn]: T;
   [Phases.Review]: T;
@@ -37,26 +50,6 @@ type ConfigGeneratorFunction<T extends BlockConfigBase> = (
 export type ConfigGeneratorMap<T extends BlockConfigBase> = {
   [key in AutoGenPreset]?: ConfigGeneratorFunction<T>;
 };
-
-interface GetConfigByPresetProps<T extends BlockConfigBase> {
-  configMap: ConfigGeneratorMap<T>;
-  preset: AutoGenPreset;
-  phases: Phases[];
-  level: number;
-}
-
-export function getConfig<T extends BlockConfigBase>({
-  configMap,
-  level,
-  phases,
-  preset,
-}: GetConfigByPresetProps<T>) {
-  const configGenerator = configMap[preset];
-  if (!configGenerator) {
-    return null;
-  }
-  return configGenerator(level, phases);
-}
 
 export interface BlockGenContext<T extends TrackBase> {
   track: T[];

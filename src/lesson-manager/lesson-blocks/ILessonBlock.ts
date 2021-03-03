@@ -26,11 +26,7 @@ export interface GetConfigArgs {
   implements: MgBase,
 })
 export abstract class ILessonBlock extends MgBase {
-  static getConfig({
-    level,
-    phases,
-    preset,
-  }: GetConfigArgs): ConfigByPhase | null {
+  static getConfig({ level, phases, preset }: GetConfigArgs): ConfigByPhase {
     console.log(preset, level, phases);
     throw new Error("ILessonBlock dose not provide config");
   }
