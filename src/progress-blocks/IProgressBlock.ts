@@ -3,7 +3,7 @@ import { Field, ID, Int, InterfaceType, ObjectType } from "type-graphql";
 import {
   ILessonBlock,
   LessonBlockBaseModel,
-} from "../lesson-blocks/ILessonBlock";
+} from "../lesson-manager/lesson-blocks/ILessonBlock";
 import { LessonBase, LessonModel } from "../lesson-manager/lesson.base";
 import { MgBase } from "../typed/mg.model.base";
 

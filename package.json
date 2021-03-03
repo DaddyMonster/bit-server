@@ -25,6 +25,8 @@
                 "target": "ES5",
                 "module": "CommonJS",
                 "skipLibCheck": true,
+                "emitDecoratorMetadata": true,
+                "experimentalDecorators": true,
                 "typeRoots": [
                   "./src/typed"
                 ]

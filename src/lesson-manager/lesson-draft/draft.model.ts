@@ -2,7 +2,6 @@ import { modelOptions, prop } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
 import { LessonTypes, StepStateStatus } from "../../enums";
 import { MgBase } from "../../typed/mg.model.base";
-import { availBlockLists } from "../lesson-config-base";
 import { ILessonData } from "../lesson-data/base";
 import { SoriLessonData } from "../lesson-data/sori/sori-data";
 import { LessonBase } from "../lesson.base";
@@ -31,11 +30,6 @@ export class Draft extends LessonBase {
     discriminators: () => [{ type: SoriLessonData, value: LessonTypes.Sori }],
   })
   draftData: ILessonData | null;
-
-  @Field()
-  get availBlocks() {
-    return availBlockLists[this.lessonType];
-  }
 
   @Field()
   @prop()
