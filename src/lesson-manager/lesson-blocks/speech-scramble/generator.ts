@@ -6,9 +6,9 @@ export class SpeechScrambleGenerator extends BlockGeneratorBase {
   static async generate({
     track,
     vocaCategory,
-    lessonConfig,
+    blockConfigMap,
   }: BlockGenContext<TokkenedSubTrack>) {
-    console.log(track, vocaCategory, lessonConfig);
+    console.log(track, vocaCategory, blockConfigMap);
     return [];
   }
 }

@@ -1,25 +1,42 @@
 import { prop } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
+import { BlockStepType, BlockType, BlockTypeTag } from "../../../enums";
 import { MgBase } from "../../../typed/mg.model.base";
-import { getConfigFieldModifier } from "../block-config-base";
-import { GetConfigArgs, ILessonBlock } from "../ILessonBlock";
-import { SentenceDicConfigByPhase } from "./config";
+import {
+  ConfigConstructorArgs,
+  ConfigGeneratorArgs,
+} from "../block-config-base";
+import { ILessonBlock } from "../ILessonBlock";
+import { SentenceDicConfig } from "./config";
 import { SentenceDicGenerator } from "./generator";
-import { sentenceDicModifier } from "./modifier";
+
+export interface StDicConstructorProps {
+  trackIdx: number;
+  allowInitialLetterHint: boolean;
+  dedicatedPoint: number;
+}
 
 @ObjectType({ implements: [MgBase, ILessonBlock] })
 export class SentenceDicBlock extends ILessonBlock {
-  static getConfig({ level, phases, preset }: GetConfigArgs) {
-    // Invoke Config class static method
+  static getGenConfig(args: ConfigGeneratorArgs) {
+    return SentenceDicConfig.getGenConfig(args);
   }
-
-  static getConfigFieldModifier() {
-    return getConfigFieldModifier(sentenceDicModifier);
+  static getConfigDetail(args: ConfigConstructorArgs) {
+    return new SentenceDicConfig(args);
   }
 
   static generator = SentenceDicGenerator.generate;
 
-  @Field(() => SentenceDicConfigByPhase)
-  @prop({ type: () => SentenceDicConfigByPhase })
-  config: SentenceDicConfigByPhase;
+  blockStepType = BlockStepType.st;
+  blockType = BlockType.st_dic;
+  blockTypeTags = [BlockTypeTag.wt, BlockTypeTag.rd];
+
+  @Field()
+  @prop()
+  allowInitialLetterHint: boolean;
+
+  constructor(args: StDicConstructorProps) {
+    super();
+    Object.assign(this, args);
+  }
 }

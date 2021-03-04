@@ -1,12 +1,31 @@
 import { prop } from "@typegoose/typegoose";
-import { createUnionType, Field, Int, ObjectType } from "type-graphql";
+import {
+  ClassType,
+  createUnionType,
+  Field,
+  InputType,
+  Int,
+  ObjectType,
+} from "type-graphql";
 import { AutoGenPreset, Phases, VocaCategory } from "../../enums";
 import { ExtractLevel } from "../../enums/block-enums/config.enum";
 import { TrackBase } from "../../tracks/track.model";
-import { LessonConfig } from "../lesson-config";
+import { BlockConfigMap, LessonConfig } from "../lesson-config";
+import { PresetLayerByPhase } from "./ILessonBlock";
+import { RolePlayConfigInfered } from "./role-play/config";
 
 @ObjectType()
 export abstract class BlockConfigBase {
+  static getGenConfigByPreset(preset: AutoGenPreset): PresetLayerByPhase {
+    console.log(preset);
+    throw new Error(
+      "You have invoked Abstact Class method[getGenconfigByPreset]"
+    );
+  }
+  @Field(() => Phases)
+  @prop()
+  phase: Phases;
+
   @Field()
   @prop({ default: false })
   generate: boolean = false;
@@ -18,27 +37,40 @@ export abstract class BlockConfigBase {
   @Field(() => Int)
   @prop()
   dedicatedPoint: number;
+
+  inferedConfig: object;
 }
 
-export abstract class ConfigByPhase {
-  [Phases.Learn]: BlockConfigBase;
-  [Phases.Review]?: BlockConfigBase;
-  [Phases.Test]?: BlockConfigBase;
-}
-
-interface InferedConfigArgs {
-  level: number;
+@InputType()
+export class ConfigGeneratorArgs {
+  @Field()
   preset: AutoGenPreset;
+
+  @Field()
+  level: number;
+}
+
+@ObjectType()
+export class BlockGenConfig {
+  @Field(() => [Phases])
+  genPhases: Phases[];
+
+  @Field(() => ExtractLevel)
+  extractLevel: ExtractLevel;
+}
+
+@InputType()
+export class ConfigConstructorArgs extends BlockGenConfig {
+  @Field(() => Phases)
   phase: Phases;
+
+  @Field(() => Int)
+  level: number;
 }
 
-export interface ConfigConstructorArgs<T extends BlockConfigBase> {
-  type: "infer" | "direct";
-  inferedConfigArgs: InferedConfigArgs;
-  directConfigArgs: Partial<T>;
-}
+export const allPhases: Phases[] = [Phases.Learn, Phases.Review, Phases.Test];
 
-interface ConfigFunctionByPhase<T extends BlockConfigBase> {
+export interface ConfigByPhase<T extends BlockConfigBase> {
   [Phases.Learn]: T;
   [Phases.Review]: T;
   [Phases.Test]: T;
@@ -46,15 +78,17 @@ interface ConfigFunctionByPhase<T extends BlockConfigBase> {
 type ConfigGeneratorFunction<T extends BlockConfigBase> = (
   level: number,
   phases: Phases[]
-) => ConfigFunctionByPhase<T>;
+) => ConfigByPhase<T>;
 export type ConfigGeneratorMap<T extends BlockConfigBase> = {
   [key in AutoGenPreset]?: ConfigGeneratorFunction<T>;
 };
 
 export interface BlockGenContext<T extends TrackBase> {
   track: T[];
-  vocaCategory: VocaCategory;
-  lessonConfig: LessonConfig;
+  vocaCategory: VocaCategory | null;
+  blockConfigMap: BlockConfigMap;
+  level: number;
+  roleInfo: RolePlayConfigInfered | null;
 }
 
 @ObjectType()

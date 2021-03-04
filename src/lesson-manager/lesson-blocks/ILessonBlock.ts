@@ -1,17 +1,27 @@
 import { getModelForClass, prop } from "@typegoose/typegoose";
-import { Field, ID, Int, InterfaceType, ObjectType } from "type-graphql";
+import {
+  Field,
+  ID,
+  InputType,
+  Int,
+  InterfaceType,
+  ObjectType,
+} from "type-graphql";
 import {
   AutoGenPreset,
   BlockStepType,
   BlockType,
   BlockTypeTag,
+  ExtractLevel,
   Phases,
 } from "../../enums";
 import { MgBase } from "../../typed/mg.model.base";
 import {
   BlockConfigBase,
+  BlockGenConfig,
   ConfigByPhase,
-  ModifierArray,
+  ConfigConstructorArgs,
+  ConfigGeneratorArgs,
 } from "./block-config-base";
 import { BlockGeneratorBase } from "./block-generator-base";
 
@@ -21,17 +31,50 @@ export interface GetConfigArgs {
   phases: Phases[];
 }
 
+@InputType()
+@ObjectType()
+export class BlockGenInfo {
+  @Field()
+  generate: boolean;
+
+  @Field(() => BlockType)
+  blockName: BlockType;
+
+  @Field(() => ExtractLevel)
+  extractLevel: ExtractLevel;
+}
+
+@ObjectType()
+export class PresetLayerByPhase {
+  @Field(() => BlockGenInfo)
+  [Phases.Learn]: BlockGenInfo;
+
+  @Field(() => BlockGenInfo)
+  [Phases.Review]: BlockGenInfo;
+
+  @Field(() => BlockGenInfo)
+  [Phases.Test]: BlockGenInfo;
+}
+
+export interface ConfigDetailArgs {
+  phase: Phases;
+  level: number;
+}
+
 @InterfaceType({
   resolveType: (val: any) => val.constructor.name,
   implements: MgBase,
 })
 export abstract class ILessonBlock extends MgBase {
-  static getConfig({ level, phases, preset }: GetConfigArgs): ConfigByPhase {
-    console.log(preset, level, phases);
-    throw new Error("ILessonBlock dose not provide config");
+  static getGenConfig(args: ConfigGeneratorArgs): BlockGenConfig {
+    console.log(args);
+    throw new Error("You have Invoked Abstract class static method!");
   }
-  static getConfigFieldModifier(): ModifierArray<any> {
-    throw new Error("ILessonBlock dose not provide modifier");
+  static getConfigDetail(args: ConfigConstructorArgs): BlockConfigBase {
+    console.log(args);
+    throw new Error(
+      "You have Invoked Abstract class static method[getConfigDetail]"
+    );
   }
 
   static generator = BlockGeneratorBase.generate;
@@ -64,10 +107,6 @@ export abstract class ILessonBlock extends MgBase {
   @Field(() => Int)
   @prop()
   dedicatedPoint: number;
-
-  @Field(() => ConfigByPhase)
-  @prop({ type: () => ConfigByPhase })
-  config: ConfigByPhase;
 }
 @ObjectType()
 export class LessonBlockBase extends ILessonBlock {}

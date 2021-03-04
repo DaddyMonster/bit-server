@@ -1,76 +1,85 @@
 import { prop } from "@typegoose/typegoose";
-import { Field, Float, ObjectType } from "type-graphql";
-import { ExtractLevel, Phases } from "../../../enums";
-import { getHiddenTok, hasItem } from "../../../util/lesson-config-util";
+import { Field, ObjectType } from "type-graphql";
+import { AutoGenPreset, ExtractLevel, Phases } from "../../../enums";
+import { allTrue } from "../../../util/lesson-config-util";
 import {
+  allPhases,
   BlockConfigBase,
-  ConfigByPhase,
+  BlockGenConfig,
   ConfigConstructorArgs,
-  ConfigGeneratorMap,
+  ConfigGeneratorArgs,
 } from "../block-config-base";
-import { GetConfigArgs } from "../ILessonBlock";
 
-@ObjectType()
-export class SentenceDicConfigByPhase implements ConfigByPhase {
-  @Field(() => SentenceDicConfig)
-  @prop({ type: () => SentenceDicConfig })
-  [Phases.Learn]: SentenceDicConfig;
-
-  @Field(() => SentenceDicConfig, { nullable: true })
-  @prop({ type: () => SentenceDicConfig })
-  [Phases.Review]?: SentenceDicConfig;
-
-  @Field(() => SentenceDicConfig, { nullable: true })
-  @prop({ type: () => SentenceDicConfig })
-  [Phases.Test]?: SentenceDicConfig;
+type MapByPreset<T> = {
+  [key in AutoGenPreset]?: T;
+};
+const genMapByPreset: MapByPreset<boolean> = {
+  "sori-full": true,
+  "sori-light": false,
+  "sori-role-aid": false,
+  "sori-standard": true,
+};
+const extractMapByPresetM: MapByPreset<ExtractLevel> = {
+  "sori-full": ExtractLevel.M,
+  "sori-light": ExtractLevel.L,
+  "sori-role-aid": ExtractLevel.L,
+  "sori-standard": ExtractLevel.M,
+};
+function getGenerate(preset: AutoGenPreset, level: number) {
+  return (genMapByPreset[preset] ?? false) && level > 5;
+}
+function getExtractLevel(preset: AutoGenPreset) {
+  return extractMapByPresetM[preset] ?? ExtractLevel.M;
 }
 
 @ObjectType()
-export class SentenceDicConfig extends BlockConfigBase {
-  static getConfigByPhase({ level, phases, preset }: GetConfigArgs) {
-    phases.map((x) => {});
+export class InferedSentenceDicConfg {
+  @Field()
+  @prop()
+  allowInitialLetterHint: boolean;
+
+  set setAllowInitialLetterHint(val: boolean) {
+    this.allowInitialLetterHint = val;
   }
 
-  dedicatedPoint: number = 2;
-  extractLevel = ExtractLevel.M;
-  generate: boolean = false;
+  constructor(phase: Phases, level: number) {
+    this.allowInitialLetterHint = allTrue([
+      phase === Phases.Learn,
+      phase === Phases.Review,
+      level < 5,
+    ]);
+  }
+}
 
-  @Field(() => Float)
-  @prop()
-  hiddenTokkenLevel: number;
+@ObjectType()
+export class SentenceDicConfig implements BlockConfigBase {
+  dedicatedPoint: number = 3;
+  extractLevel: ExtractLevel;
+  generate: boolean;
+  phase: Phases;
+
+  @Field(() => InferedSentenceDicConfg)
+  @prop({ type: () => InferedSentenceDicConfg })
+  inferedConfig: InferedSentenceDicConfg;
+
+  public static getGenConfig({
+    level,
+    preset,
+  }: ConfigGeneratorArgs): BlockGenConfig {
+    return {
+      extractLevel: getExtractLevel(preset),
+      genPhases: getGenerate(preset, level) ? allPhases : [],
+    };
+  }
 
   constructor({
-    directConfigArgs,
-    inferedConfigArgs,
-    type,
-  }: ConfigConstructorArgs<SentenceDicConfig>) {
-    super();
-    if (type === "infer") {
-      console.log(inferedConfigArgs);
-      // INFERED FIELD LOGIC
-    } else {
-      Object.assign(this, directConfigArgs);
-    }
+    level,
+    phase,
+    genPhases,
+    extractLevel,
+  }: ConfigConstructorArgs) {
+    this.generate = genPhases.includes(phase);
+    this.extractLevel = extractLevel;
+    this.inferedConfig = new InferedSentenceDicConfg(phase, level);
   }
 }
-
-/* export const sentenceDicConfigMap: ConfigGeneratorMap<SentenceDicConfig> = {
-  "sori-full": (lv, phases) => {},
-  "sori-light": () => justDont,
-  "sori-role-aid": () => justDont,
-  "sori-standard": (lv, phases) => {
-    return {
-      learn: create({ extractLevel: ExtractLevel.L }),
-      review: hasItem(phases, Phases.Review)
-        ? create({
-            extractLevel: ExtractLevel.L,
-            hiddenTokkenLevel: Math.min(getHiddenTok(lv) + 0.3, 1),
-          })
-        : dont(),
-      test: hasItem(phases, Phases.Test)
-        ? create({ extractLevel: ExtractLevel.L })
-        : dont(),
-    };
-  },
-};
- */

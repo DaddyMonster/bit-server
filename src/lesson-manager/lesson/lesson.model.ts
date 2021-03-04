@@ -1,6 +1,6 @@
 import { modelOptions, prop } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
-import { AutoGenPreset, LessonTypes, Phases } from "../../enums";
+import { LessonTypes, Phases } from "../../enums";
 import { ILessonData } from "../lesson-data/base";
 import { SoriLessonData } from "../lesson-data/sori/sori-data";
 import { LessonBase } from "../lesson.base";
