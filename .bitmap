@@ -92,7 +92,7 @@
         "origin": "AUTHORED",
         "exported": true
     },
-    "hessed.server/lesson-manager@0.0.2": {
+    "hessed.server/lesson-manager@0.0.3": {
         "files": [
             {
                 "relativePath": "src/components/lesson-manager/creator-info.model.ts",
